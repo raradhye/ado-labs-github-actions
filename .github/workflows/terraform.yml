@@ -37,7 +37,7 @@ jobs:
     # Run even-if terraform format is sucess or failure
     - name: Terraform Validate
       id: validate
-      if: github.ref != 'refs/heads/main' && (sucess() || failure())
+      if: github.ref != 'refs/heads/main' && (success() || failure())
       run: terraform validate -no-color
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
