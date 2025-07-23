@@ -51,7 +51,8 @@ jobs:
     - name: Terraform Validate
       id: validate
       if: github.ref != 'refs/heads/main' && (success() || failure())
-      run:  terraform validate -no-color > tfvalidate.log
+      run:  |
+            terraform validate -no-color > tfvalidate.log
             cat tfvalidate.log
       shell:  bash
     
