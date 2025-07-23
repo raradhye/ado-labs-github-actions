@@ -13,7 +13,7 @@ variable "naming_prefix" {
 }
 variable "os_type" {
   type    = string
-  default = "Linux"
+  default = "Windows"
 }
 variable "sku_name" {
   type    = string
