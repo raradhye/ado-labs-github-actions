@@ -66,6 +66,7 @@ jobs:
         echo "EOF" >> $GITHUB_OUTPUT 
 
     # Run a terraform plan for pull requests only
+    # Save Terraform plan output to a file
     - name: Terraform Plan
       id: plan
       env:
@@ -74,39 +75,47 @@ jobs:
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       if: github.event_name == 'pull_request'
-      run: terraform plan -no-color
+      run: |
+        terraform plan -no-color -out=tfplan
+        terraform show -no-color tfplan > tfplan.log
+
+    # Export plan safely into environment
+    - name: Set plan output
+      id: set-plan-output
+      run: |
+        echo "PLAN<<EOF" >> $GITHUB_ENV
+        cat tfplan.log >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV        
     
     # Add a comment to pull requests with plan results
     - name: add-plan-comment
       id: comment
       uses: actions/github-script@v3
       if: github.event_name == 'pull_request'
-      env:
-        PLAN: "${{ steps.plan.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const output = `#### Terraform Format and Style : \`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization : \`${{ steps.init.outcome }}\`
-          #### Terraform Validation :
-          \`\`\`
-          ${{ steps.set-validate-output.outputs.stdout}}
-          \`\`\`
-          #### Terraform Plan :
-          <details><summary>Show Plan</summary>
-          \`\`\`
-          ${process.env.PLAN}
-          \`\`\`          
-          </details>
+      script: |
+        const output = `#### Terraform Format and Style : \`${{ steps.fmt.outcome }}\`
+        #### Terraform Initialization : \`${{ steps.init.outcome }}\`
+        #### Terraform Validation :
+        \`\`\`
+        ${{ steps.set-validate-output.outputs.stdout}}
+        \`\`\`
+        #### Terraform Plan :
+        <details><summary>Show Plan</summary>
+        \`\`\`
+        ${process.env.PLAN}
+        \`\`\`          
+        </details>
           
-          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
+        github.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: output
+        })
 
       # On push to main, build or change infrastructure according to Terraform configuration files
     - name: Terraform Apply
