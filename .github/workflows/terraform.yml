@@ -51,22 +51,9 @@ jobs:
     - name: Terraform Validate
       id: validate
       if: github.ref != 'refs/heads/main' && (success() || failure())
-      run:  |
-            terraform validate -no-color > tfvalidate.log
-            cat tfvalidate.log
-      shell:  bash
-    
-    # Set the output manually  
-    - name: set validate output
-      if: always()
-      id: set-validate-output
-      run:  |
-        echo "stdout<<EOF" >> $GITHUB_OUTPUT
-        cat tfvalidate.log >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT 
+      run: terraform validate -no-color
 
     # Run a terraform plan for pull requests only
-    # Save Terraform plan output to a file
     - name: Terraform Plan
       id: plan
       env:
@@ -75,32 +62,23 @@ jobs:
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       if: github.event_name == 'pull_request'
-      run: |
-        terraform plan -no-color -out=tfplan
-        terraform show -no-color tfplan > tfplan.log
-
-    # Export plan safely into environment
-    - name: Set plan output
-      if: github.event_name == 'pull_request'
-      id: set-plan-output
-      run: |
-        echo "PLAN<<EOF" >> $GITHUB_ENV
-        cat tfplan.log >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV        
+      run: terraform plan -no-color
     
     # Add a comment to pull requests with plan results
     - name: add-plan-comment
       id: comment
       uses: actions/github-script@v3
       if: github.event_name == 'pull_request'
+      env:
+        PLAN: "${{ steps.plan.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Terraform Format and Style : \`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization : \`${{ steps.init.outcome }}\`
+          const output = `#### Terraform Format and Style :\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization :\`${{ steps.init.outcome }}\`
           #### Terraform Validation :
           \`\`\`
-          ${{ steps.set-validate-output.outputs.stdout}}
+          ${process.env.VALIDATION}
           \`\`\`
           #### Terraform Plan :
           <details><summary>Show Plan</summary>
