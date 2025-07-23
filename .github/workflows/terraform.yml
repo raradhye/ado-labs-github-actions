@@ -81,6 +81,7 @@ jobs:
 
     # Export plan safely into environment
     - name: Set plan output
+      if: github.event_name == 'pull_request'
       id: set-plan-output
       run: |
         echo "PLAN<<EOF" >> $GITHUB_ENV
