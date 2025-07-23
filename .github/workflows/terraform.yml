@@ -76,10 +76,14 @@ jobs:
         script: |
           const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
           #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖:
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Validation Output</summary>
+
+          \`\`\`\n
+          ${{ steps.validate.outputs.stdout }}
           \`\`\`
-          ${process.env.VALIDATION}
-          \`\`\`
+
+          </details>
           #### Terraform Plan 📖:
           <details><summary>Show Plan</summary>
           \`\`\`
