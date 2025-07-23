@@ -51,7 +51,18 @@ jobs:
     - name: Terraform Validate
       id: validate
       if: github.ref != 'refs/heads/main' && (success() || failure())
-      run: terraform validate -no-color
+      run:  terraform validate -no-color > tfvalidate.log
+            cat tfvalidate.log
+      shell:  bash
+    
+    # Set the output manually  
+    - name: set validate output
+      if: always()
+      id: set-validate-output
+      run:  |
+        echo "stdout<<EOF" >> $GITHUB_OUTPUT
+        cat tfvalidate.log >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT 
 
     # Run a terraform plan for pull requests only
     - name: Terraform Plan
@@ -74,13 +85,13 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖:
+          const output = `#### Terraform Format and Style : \`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization : \`${{ steps.init.outcome }}\`
+          #### Terraform Validation :
           \`\`\`
-          ${process.env.VALIDATION}
+          ${{ steps.set-validate-output.outputs.stdout}}
           \`\`\`
-          #### Terraform Plan 📖:
+          #### Terraform Plan :
           <details><summary>Show Plan</summary>
           \`\`\`
           ${process.env.PLAN}
