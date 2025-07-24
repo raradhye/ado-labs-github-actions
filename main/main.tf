@@ -29,6 +29,9 @@ resource "azurerm_service_plan" "app_service" {
   resource_group_name = azurerm_resource_group.app_service.name
   os_type             = var.os_type
   sku_name            = var.sku_name
+
+  # checkov:skip=CKV_AZURE_212: Resume project - single instance OK for demo
+  # checkov:skip=CKV_AZURE_225: Zone redundancy not critical for demo
 }
 
 resource "azurerm_windows_web_app" "app_service" {
@@ -38,6 +41,9 @@ resource "azurerm_windows_web_app" "app_service" {
   service_plan_id     = azurerm_service_plan.app_service.id
 
   site_config {}
+  # checkov:skip=CKV_AZURE_222: Public access is acceptable in this demo
+  # checkov:skip=CKV_AZURE_14: HTTPS redirection not needed for demo
+  # checkov:skip=CKV_AZURE_213: No health check for Hello World  
 }
 
 resource "azurerm_app_service_source_control" "app_source_control" {

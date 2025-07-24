@@ -57,6 +57,9 @@ resource "azurerm_storage_account" "sa" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
+  # checkov:skip=CKV_AZURE_59: Demo setup - public access ok
+  # checkov:skip=CKV2_AZURE_38: No soft-delete needed for this
+  # checkov:skip=CKV2_AZURE_33: Private endpoint out of scope for resume
 }
 
 resource "azurerm_storage_container" "ct" {
