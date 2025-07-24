@@ -48,7 +48,7 @@ resource "azurerm_windows_web_app" "app_service" {
 
 resource "azurerm_app_service_source_control" "app_source_control" {
   app_id                 = azurerm_windows_web_app.app_service.id
-  repo_url               = "https://github.com/ned1313/nodejs-docs-hello-world"
+  repo_url               = "https://github.com/raradhye/ado-labs-github-actions"
   branch                 = "main"
   use_manual_integration = true
   use_mercurial          = false

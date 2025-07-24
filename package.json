@@ -1,0 +1,12 @@
+{
+    "name": "rajesh-project-app",
+    "version": "1.0.0",
+    "description": "Minimal Node.js app for Azure deployment using Terraform & GitHub Actions",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2"
+    }
+}
