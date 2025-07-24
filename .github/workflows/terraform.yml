@@ -83,7 +83,6 @@ jobs:
         container_user: 1000
         output_format: github_failed_only
         soft_fail: false
-#        skip_check: CKV_AZURE_88,CKV_AZURE_71,CKV_AZURE_16,CKV_AZURE_80,CKV_AZURE_63,CKV_AZURE_18,CKV_AZURE_65,CKV_AZURE_17,CKV_AZURE_13,CKV_AZURE_78,CKV_AZURE_66,CKV_AZURE_44,CKV_AZURE_35,CKV_AZURE_43,CKV_AZURE_33,CKV_AZURE_3,CKV2_AZURE_1,CKV2_AZURE_18,CKV2_AZURE_8,CKV2_AZURE_21,CKV_GIT_4,CKV_AZURE_212,CKV_AZURE_225,CKV_AZURE_222,CKV_AZURE_14,CKV_AZURE_213,CKV_AZURE_59,CKV_AZURE_38,CKV_AZURE_33,CKV_AZURE_190,CKV_AZURE_206,CKV2_AZURE_47,CKV2_AZURE_40,CKV2_AZURE_41
         skip_check: ${{ steps.skiplist.outputs.skip_list }}
 
     # Add a comment to pull requests with plan results
@@ -99,13 +98,9 @@ jobs:
           const output = `#### Terraform Format and Style :\`${{ steps.fmt.outcome }}\`
           #### Terraform Initialization :\`${{ steps.init.outcome }}\`
           #### Terraform Validation :\`${{ steps.validate.outcome }}\`
+          #### Terraform Plan :\`${{ steps.plan.outcome }}\`
           #### Checkov :\`${{ steps.checkov.outcome }}\`
 
-          <details><summary>Validation Output</summary>
-          \`\`\`\n
-          ${{ steps.validate.outputs.stdout }}
-          \`\`\`
-          </details>
           #### Terraform Plan :
           <details><summary>Show Plan</summary>
           \`\`\`
