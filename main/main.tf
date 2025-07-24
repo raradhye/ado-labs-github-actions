@@ -40,7 +40,12 @@ resource "azurerm_windows_web_app" "app_service" {
   location            = azurerm_resource_group.app_service.location
   service_plan_id     = azurerm_service_plan.app_service.id
 
-  site_config {}
+  site_config {
+    application_stack {
+      current_stack = "node"
+      node_version  = "~22" # You can change this based on your needs
+    }
+  }
   # checkov:skip=CKV_AZURE_222: Public access is acceptable in this demo
   # checkov:skip=CKV_AZURE_14: HTTPS redirection not needed for demo
   # checkov:skip=CKV_AZURE_213: No health check for Hello World  
