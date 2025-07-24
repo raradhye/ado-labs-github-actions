@@ -29,3 +29,7 @@ override.tf.json
 # example: *tfplan*
 
 token
+# Include node_module for the Hello World app
+node_modules/
+.env
+package-lock.json
